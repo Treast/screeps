@@ -50,15 +50,15 @@ export class Unit {
             if(this.creep.harvest(source) == ERR_NOT_IN_RANGE)
                 this.creep.moveTo(source);
         } else {
-            const targets = this.creep.room.find(FIND_STRUCTURES, {
+            const target = this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: structure => {
                     return ((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity);
                 }
             });
 
-            if(targets.length > 0) {
-                if(this.creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    this.creep.moveTo(targets[0]);
+            if(target) {
+                if(this.creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    this.creep.moveTo(target);
                 }
             }
         }
@@ -93,22 +93,35 @@ export class Unit {
     private workBuild() {
         if(this.creep.memory.working == undefined) this.creep.memory.working = false;
 
-        if (this.creep.memory.working && this.creep.carry.energy == 0) {
-          this.creep.memory.working = false;
-        }
-
-        if (!this.creep.memory.working && this.creep.carry.energy == this.creep.carryCapacity) {
-          this.creep.memory.working = true;
-        }
-
-        const targets = this.creep.room.find(FIND_CONSTRUCTION_SITES);
-        if (targets.length > 0) {
-            const spawn = Game.spawns[Config.spawn];
-            if (this.creep.memory.working && this.creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-                this.creep.moveTo(targets[0]);
-            } else if (this.creep.withdraw(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                this.creep.moveTo(spawn);
+        const target = this.creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+        if (target) {
+            if (this.creep.memory.working && this.creep.carry.energy == 0) {
+                this.creep.memory.working = false;
             }
+
+            if (!this.creep.memory.working && this.creep.carry.energy == this.creep.carryCapacity) {
+                this.creep.memory.working = true;
+            }
+
+            const spawn = Game.spawns[Config.spawn];
+
+            const energyStructures = this.creep.room.find(FIND_STRUCTURES, {
+                filter: structure => {
+                    return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION);
+                }
+            });
+
+            const bestFilled = _.max(energyStructures, structure => {
+                return (structure as StructureSpawn | StructureExtension).energy;
+            })
+
+            if (this.creep.memory.working && this.creep.build(target) == ERR_NOT_IN_RANGE) {
+                this.creep.moveTo(target);
+            } else if (!this.creep.memory.working && this.creep.withdraw(bestFilled, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                this.creep.moveTo(bestFilled);
+            }
+        } else {
+            this.workUpgrade();
         }
     }
 }
