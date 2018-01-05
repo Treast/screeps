@@ -153,8 +153,9 @@ export class Unit {
                     }
                 }
 
+            } else {
+                this.workUpgrade();
             }
-            this.workUpgrade();
         }
     }
 }
