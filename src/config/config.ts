@@ -18,8 +18,8 @@ export const Config : Config = {
         {
             code: Constant.ROLE_HARVESTER,
             name: "Harvester",
-            count: 6,
-            body: [WORK, MOVE, MOVE, CARRY]
+            count: 8,
+            body: [WORK, WORK, MOVE, MOVE, CARRY]
         }
     ]
 };

@@ -32,6 +32,11 @@ export class Unit {
         if(this.creep.ticksToLive < 500) {
             console.log(`Renewing creep named ${this.name}`);
             const spawn = Game.spawns[Config.spawn];
+
+            if(this.creep.carry.energy > 0) {
+                this.creep.transfer(spawn, RESOURCE_ENERGY);
+            }
+
             if(spawn.renewCreep(this.creep) == ERR_NOT_IN_RANGE) {
                 this.creep.moveTo(spawn);
             }
@@ -52,7 +57,7 @@ export class Unit {
         } else {
             const target = this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: structure => {
-                    return ((structure.structureType == STRUCTURE_EXTENSION) || (structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity);
+                    return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
                 }
             });
 
@@ -113,7 +118,7 @@ export class Unit {
 
             const bestFilled = _.max(energyStructures, structure => {
                 return (structure as StructureSpawn | StructureExtension).energy;
-            })
+            });
 
             if (this.creep.memory.working && this.creep.build(target) == ERR_NOT_IN_RANGE) {
                 this.creep.moveTo(target);
@@ -121,6 +126,34 @@ export class Unit {
                 this.creep.moveTo(bestFilled);
             }
         } else {
+            const target = this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: structure => {
+                    return structure.hits < structure.hitsMax;
+                }
+            });
+
+            const energyStructures = this.creep.room.find(FIND_STRUCTURES, {
+                filter: structure => {
+                    return (structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_EXTENSION);
+                }
+            });
+
+            const bestFilled = _.max(energyStructures, structure => {
+                return (structure as StructureSpawn | StructureExtension).energy;
+            });
+
+            if(target) {
+                if(this.creep.carry.energy == 0) {
+                    if(this.creep.withdraw(bestFilled, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        this.creep.moveTo(bestFilled);
+                    }
+                } else {
+                    if (this.creep.repair(target) == ERR_NOT_IN_RANGE) {
+                      this.creep.moveTo(target);
+                    }
+                }
+
+            }
             this.workUpgrade();
         }
     }
