@@ -57,7 +57,7 @@ export class Unit {
         } else {
             const target = this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: structure => {
-                    return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity;
+                    return ((structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity) || (structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity);
                 }
             });
 

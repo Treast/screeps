@@ -6,14 +6,14 @@ export const Config : Config = {
         {
             code: Constant.ROLE_BUILDER,
             name: "Builder",
-            count: 2,
-            body: [WORK, MOVE, MOVE, CARRY]
+            count: 3,
+            body: [WORK, WORK, MOVE, MOVE, CARRY]
         },
         {
             code: Constant.ROLE_UPGRADER,
             name: "Upgrader",
-            count: 3,
-            body: [WORK, MOVE, MOVE, CARRY]
+            count: 6,
+            body: [WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, CARRY, CARRY, CARRY]
         },
         {
             code: Constant.ROLE_HARVESTER,
