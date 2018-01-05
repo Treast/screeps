@@ -1,24 +1,25 @@
-import Constants from "./constants";
+import { Constant } from './constants';
 
-export class Config {
-  public static readonly roles: Role[] = [
-    {
-      id: Constants.ROLE_HARVESTER,
-      role: "Harvester",
-      body: [WORK, MOVE, CARRY],
-      numberMax: 2
-    },
-    {
-      id: Constants.ROLE_BUILDER,
-      role: "Builder",
-      body: [WORK, MOVE, CARRY],
-      numberMax: 2
-    },
-    {
-      id: Constants.ROLE_UPGRADER,
-      role: "Upgrader",
-      body: [WORK, MOVE, CARRY],
-      numberMax: 1
-    }
-  ];
+export const Config : Config = {
+    spawn: 'Spawn1',
+    roles: [
+        {
+            code: Constant.ROLE_BUILDER,
+            name: "Builder",
+            count: 2,
+            body: [WORK, MOVE, MOVE, CARRY]
+        },
+        {
+            code: Constant.ROLE_UPGRADER,
+            name: "Upgrader",
+            count: 3,
+            body: [WORK, MOVE, MOVE, CARRY]
+        },
+        {
+            code: Constant.ROLE_HARVESTER,
+            name: "Harvester",
+            count: 6,
+            body: [WORK, MOVE, MOVE, CARRY]
+        }
+    ]
 };
