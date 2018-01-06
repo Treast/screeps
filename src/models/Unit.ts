@@ -1,5 +1,6 @@
 import { Constant } from '../config/constants';
 import { Config } from '../config/config';
+import { Storage } from '../models/Storage';
 
 export class Unit {
 
@@ -14,7 +15,7 @@ export class Unit {
     }
 
     public static create(spawn: StructureSpawn, role: Role): Unit | null {
-        const random = Math.floor(Math.random() * 100000 + 1);
+        const random = Math.floor(Math.random() * 10000000 + 1);
         const name = `${role.name}${random}`;
 
         if(spawn.isActive() && spawn.spawnCreep(role.body, name, { dryRun: true }) === 0) {
@@ -55,17 +56,7 @@ export class Unit {
             if(this.creep.harvest(source) == ERR_NOT_IN_RANGE)
                 this.creep.moveTo(source);
         } else {
-            const target = this.creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: structure => {
-                    return ((structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) && structure.energy < structure.energyCapacity) || (structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity);
-                }
-            });
-
-            if(target) {
-                if(this.creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    this.creep.moveTo(target);
-                }
-            }
+            Storage.store(this.creep, RESOURCE_ENERGY);
         }
     }
 
@@ -87,10 +78,7 @@ export class Unit {
                     this.creep.moveTo(controller);
                 }
             } else {
-                const spawn = Game.spawns[Config.spawn];
-                if (this.creep.withdraw(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    this.creep.moveTo(spawn);
-                }
+                Storage.withdraw(this.creep, RESOURCE_ENERGY);
             }
         }
     }

@@ -1,5 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { UnitManager } from "managers/unit.manager";
+import { Storage } from "models/Storage";
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -8,6 +9,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   let unitManager = new UnitManager();
 
   const cpu: number = Game.cpu.getUsed();
+
+  Storage.initialize();
 
   unitManager.initiliaze();
   unitManager.create();
